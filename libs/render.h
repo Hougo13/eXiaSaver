@@ -10,6 +10,7 @@
         int lignes;
         char nom[30];
         int **data;
+        int magic;
     } canevas;
 
     typedef struct {
