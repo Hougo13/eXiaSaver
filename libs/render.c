@@ -58,7 +58,7 @@ canevas extractFile(char *name)
         }
     }
 
-    printf("nom: %s\n", result.nom);
+    /*printf("nom: %s\n", result.nom);
     printf("numero magic: P%d\n", result.magic);
     printf("colonnes: %d\n", result.colonnes);
     printf("lignes: %d\n", result.lignes);
@@ -73,7 +73,7 @@ canevas extractFile(char *name)
             printf("%d", result.data[i][j]);
         }
         printf("\n");
-    }
+    }*/
 
     /* On ferme le fichier*/
     fclose(fichier);
@@ -99,22 +99,29 @@ grid gridGenerator(canevas final){
     case_ln = w.ws_row/canevas_ln;
     case_cl = w.ws_col/canevas_cl;
 
-    //On stocke le nombre de ligne et colonne de marge pour centrer
-    margin_cl = (w.ws_col%canevas_cl)/2;
-    margin_ln = (w.ws_row%canevas_ln)/2;
+    //Conserve le ratio x/y
+    if(case_ln < case_cl){
+        case_cl = case_ln;
+    } else{
+        case_ln = case_cl;
+    }
 
-    for(int y=0;y<w.ws_row;y++){
-        for(int i = 0 ; i < w.ws_col; i++){
+    //On stocke le nombre de ligne et colonne de marge pour centrer
+    margin_cl = (w.ws_col - case_cl * canevas_cl)/2;
+    margin_ln = (w.ws_row - case_ln * canevas_ln)/2;
+
+    for(int y=0; y < w.ws_row; y++){
+        for(int i = 0 ; i < w.ws_col; i++) {
             //On test dans quel case on se situe
-            current_ln = (y-margin_cl)/case_ln;
-            current_cl = (i-margin_ln)/case_cl;
+            current_ln = (y - margin_ln) / case_ln;
+            current_cl = (i - margin_cl) / case_cl;
 
             symbol = ' ';
 
             //on test si on est dans le canevas et hors des marge
-            if(current_cl < canevas_cl && current_ln < canevas_ln && i > margin_ln && y > margin_cl) {
+            if (current_cl < canevas_cl && current_ln < canevas_ln && y > margin_ln && i > margin_cl) {
                 if (final.data[current_ln][current_cl]) {
-                    symbol = (char)219;
+                    symbol = (char) 219;
                 }
             }
             printf("%c", symbol);
