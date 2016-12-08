@@ -3,5 +3,6 @@ project(eXiaSaver)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.c)
-add_executable(eXiaSaver ${SOURCE_FILES})
+add_executable(eXiaSaver src/launcher.c)
+add_executable(eXiaSaver1 src/static.c)
+add_executable(eXiaSaver2 src/dynamic.c)
