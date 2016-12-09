@@ -60,23 +60,6 @@ canevas extractFile(char *name)
         }
     }
 
-    /*printf("nom: %s\n", result.nom);
-    printf("numero magic: P%d\n", result.magic);
-    printf("colonnes: %d\n", result.colonnes);
-    printf("lignes: %d\n", result.lignes);
-
-
-    printf("\n");
-
-    for(i=0; i < lignes; i++)
-    {
-        for(j=0; j < colonnes; j++)
-        {
-            printf("%d", result.data[i][j]);
-        }
-        printf("\n");
-    }*/
-
     /* On ferme le fichier*/
     fclose(fichier);
 
