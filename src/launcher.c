@@ -8,7 +8,7 @@
 
 #include <dirent.h>
 #ifndef WIN32
-    #include <sys/types.h>
+
 #endif
 
 // ! A revoir !
@@ -17,12 +17,12 @@ int rand_a_b(int, int);
 int main(int argc, char *argv[])
 {
 
-    system("cls");
+    system("clear");
 
     int selec;
     int alea;
     char global[30];
-    int nb_files = -1;
+    int nb_files = 0;
     int i;
 
     char **tabXtab;
@@ -52,38 +52,45 @@ int main(int argc, char *argv[])
             path = getenv("EXIASAVER1_PBM");
             if(path == NULL || path[0] == '\0')
             {
-                path = "../img/Static/"; // ! Enlever les "../" !
+                path = "img/Static";
             }
 
             DIR* rep = NULL;
             rep = opendir(path);
-            if (rep == NULL){ /* Si le dossier n'a pas pu être ouvert */
+
+            if (rep == NULL){ /* Si le dossier n'a pas pu ï¿½tre ouvert */
                 perror("");
                 exit(1); }
 
-            if (closedir(rep) == -1){ /* S'il y a eu un souci avec la fermeture */
+            /*if (closedir(rep) == -1){  // S'il y a eu un souci avec la fermeture
                 perror("");
-                exit(-1); }
+                exit(-1);
+            }*/
 
             struct dirent* fichierLu = NULL;
-            fichierLu = readdir(rep);
+
             while ((fichierLu = readdir(rep)) != NULL)
             {
-                printf("Le fichier lu s'appelle '%s'\n", fichierLu -> d_name);
-                nb_files++;
+                printf("Le fichier lu s'appelle %s\n", fichierLu -> d_name);
+                if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
+                    nb_files++;
+                }
             }
 
             printf("Il y a %d fichiers\n", nb_files);
 
-            tabXtab = malloc(sizeof(char*) * 3);
+            tabXtab = malloc(sizeof(char*) * nb_files);
 
             rewinddir(rep);
 
-            printf("test");
+            i = 0;
 
-            for(i=0; i < nb_files; i++)
+            while ((fichierLu = readdir(rep)) != NULL)
             {
-                    tabXtab[i] = readdir(rep)->d_name;
+                if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
+                    tabXtab[i] = fichierLu->d_name;
+                    i++;
+                }
             }
 
             /*for(i=0; i <= nb_files; i++)
@@ -91,14 +98,14 @@ int main(int argc, char *argv[])
                 strcpy(tabXtab[i], fichierLu -> d_name);
             }*/
 
-            /*for(i=1; i <= nb_files; i++)
+            for(i=0; i < nb_files; i++)
             {
-                printf("Le nom du fichier est: %s\n", tabXtab[i]);
-            }*/
+                printf("Le nom du fichier %d est: %s\n", i, tabXtab[i]);
+            }
 
 
 
-            alea = rand_a_b(1, 7);
+            alea = rand_a_b(0, nb_files);
             printf("alea= %d\n", alea);
 
             switch(alea)
