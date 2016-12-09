@@ -6,18 +6,37 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <dirent.h>
+#ifndef WIN32
+    #include <sys/types.h>
+#endif
+
+// ! A revoir !
 int rand_a_b(int, int);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
     system("cls");
 
     int selec;
     int alea;
     char global[30];
+    int nb_files = -1;
+    int i;
 
-    int coord_x;
-    int coord_y;
+    char **tabXtab;
+
+
+    char *path;
+
+    char coord_x[30];
+    char coord_y[30];
+
+    int ret_x;
+    int ret_y;
+
+    FILE* fichier = NULL;
 
     printf("Entrez le numero du type:\n");
     printf("1. Static\n");
@@ -30,57 +49,103 @@ int main(int argc, char *argv[]) {
     {
         case 1:
 
-            alea = rand_a_b(0, 2);
+            path = getenv("EXIASAVER1_PBM");
+            if(path == NULL || path[0] == '\0')
+            {
+                path = "../img/Static/"; // ! Enlever les "../" !
+            }
 
+            DIR* rep = NULL;
+            rep = opendir(path);
+            if (rep == NULL){ /* Si le dossier n'a pas pu être ouvert */
+                perror("");
+                exit(1); }
+
+            if (closedir(rep) == -1){ /* S'il y a eu un souci avec la fermeture */
+                perror("");
+                exit(-1); }
+
+            struct dirent* fichierLu = NULL;
+            fichierLu = readdir(rep);
+            while ((fichierLu = readdir(rep)) != NULL)
+            {
+                printf("Le fichier lu s'appelle '%s'\n", fichierLu -> d_name);
+                nb_files++;
+            }
+
+            printf("Il y a %d fichiers\n", nb_files);
+
+            tabXtab = malloc(sizeof(char*) * 3);
+
+            rewinddir(rep);
+
+            printf("test");
+
+            for(i=0; i < nb_files; i++)
+            {
+                    tabXtab[i] = readdir(rep)->d_name;
+            }
+
+            /*for(i=0; i <= nb_files; i++)
+            {
+                strcpy(tabXtab[i], fichierLu -> d_name);
+            }*/
+
+            /*for(i=1; i <= nb_files; i++)
+            {
+                printf("Le nom du fichier est: %s\n", tabXtab[i]);
+            }*/
+
+
+
+            alea = rand_a_b(1, 7);
             printf("alea= %d\n", alea);
 
             switch(alea)
             {
-                case 0:
-                    strcpy(global, "img0.txt");
-                    break;
                 case 1:
-                    strcpy(global, "img1.txt");
+                    strcpy(global, "img_1.pbm");
+                    break;
+                case 2:
+                    strcpy(global, "img_2.pbm");
+                    break;
+                case 3:
+                    strcpy(global, "img_3.pbm");
+                    break;
+                case 4:
+                    strcpy(global, "img_4.pbm");
+                    break;
+                case 5:
+                    strcpy(global, "img_5.pbm");
+                    break;
+                case 6:
+                    strcpy(global, "img_6.pbm");
                     break;
                 default:
                     break;
             }
 
-
-            //exec fichier1
-            //envoyer global
-
             break;
 
         case 2:
 
-            //exec fichier2
 
             break;
 
         case 3:
-            FILE* fichier = NULL;
             fichier = fopen("coord_plane.txt", "r+");
+            fscanf(fichier, "%s %s", &coord_x, &coord_y);
+            fclose(fichier);
 
-            fscanf(fichier, "%d %d", &coord_x, &coord_y);
+            printf("coord_x: %s\n", coord_x);
+            printf("coord_y: %s\n", coord_y);
 
-            fclose("coord_plane.txt");
-
-            //exec fichier3
-            //envoyer coord_x et coord_y
-
-            printf("coord_x: %", coord_x);
-            printf("coord_y: %", coord_y);
-
+            ret_x = putenv(coord_x);
+            ret_y = putenv(coord_y);
 
             break;
-
-
-
-
         default:
             break;
-
     }
 
     return 0;
