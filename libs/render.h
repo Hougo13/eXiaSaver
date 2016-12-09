@@ -22,5 +22,6 @@
     canevas extractFile(char *name);
     grid gridGenerator(canevas final);
     int printCanevas(canevas img);
+    void printGrid(grid g);
 
 #endif //EXIASAVER_RENDER_H

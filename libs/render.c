@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 canevas extractFile(char *name)
 {
@@ -69,12 +70,17 @@ canevas extractFile(char *name)
 
 grid gridGenerator(canevas final){
 
+    //on declare la nouvelle grille
+    int canevas_cl, canevas_ln, case_cl, case_ln, current_cl, current_ln, margin_ln, margin_cl, bit_state;
+    grid g;
+
     //On recup le taille su shell
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
 
-    int canevas_cl, canevas_ln, case_cl, case_ln, current_cl, current_ln, margin_ln, margin_cl;
-    char symbol[16];
+    g.colonnes = w.ws_col;
+    g.lignes = w.ws_row;
+    g.data = malloc(sizeof(int*) * g.lignes);
 
     //On stocke le nombre de ligne et colonne dans le canevas
     canevas_cl = final.colonnes;
@@ -96,27 +102,50 @@ grid gridGenerator(canevas final){
     margin_ln = (w.ws_row - case_ln * canevas_ln)/2;
 
     for(int y=0; y < w.ws_row; y++){
+        g.data[y] = malloc(sizeof(int) * g.colonnes);
         for(int i = 0 ; i < w.ws_col; i++) {
             //On test dans quel case on se situe
             current_ln = (y - margin_ln) / case_ln;
             current_cl = (i - margin_cl) / case_cl;
 
-            strcpy(symbol, " ");
+            g.data[y][i] = 0;
 
             //on test si on est dans le canevas et hors des marge
             if (current_cl < canevas_cl && current_ln < canevas_ln && y > margin_ln && i > margin_cl) {
                 if (final.data[current_ln][current_cl]) {
-                    strcpy(symbol, "█");
+                    g.data[y][i] = 1;
                 }
             }
-            printf("%s", symbol);
         }
-        printf("\n");
     }
-
-    getchar();
+    return g;
 }
 
 int printCanevas(canevas img){
-    gridGenerator(img);
+    grid g, prev_g;
+
+    while(1){
+        g = gridGenerator(img);
+        if(g.colonnes != prev_g.colonnes || g.lignes != prev_g.lignes){
+            printGrid(g);
+        }
+        prev_g = g;
+        sleep(1);
+    }
+
+}
+
+void printGrid(grid g){
+
+    for(int y = 0; y < g.lignes; y++){
+
+    for(int x = 0; x < g.colonnes; x++){
+            if(g.data[y][x]){
+                printf("█");
+            } else{
+                printf(" ");
+            }
+        }
+        printf("\n");
+    }
 }
