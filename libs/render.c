@@ -92,9 +92,9 @@ grid gridGenerator(canevas final){
 
     //Conserve le ratio x/y
     if(case_ln < case_cl){
-        case_cl = case_ln;
+        case_cl = case_ln*2;
     } else{
-        case_ln = case_cl;
+        case_ln = case_cl/2;
     }
 
     //On stocke le nombre de ligne et colonne de marge pour centrer
