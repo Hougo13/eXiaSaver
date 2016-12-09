@@ -74,7 +74,7 @@ grid gridGenerator(canevas final){
     ioctl(0, TIOCGWINSZ, &w);
 
     int canevas_cl, canevas_ln, case_cl, case_ln, current_cl, current_ln, margin_ln, margin_cl;
-    char symbol;
+    char symbol[16];
 
     //On stocke le nombre de ligne et colonne dans le canevas
     canevas_cl = final.colonnes;
@@ -101,18 +101,22 @@ grid gridGenerator(canevas final){
             current_ln = (y - margin_ln) / case_ln;
             current_cl = (i - margin_cl) / case_cl;
 
-            symbol = ' ';
+            strcpy(symbol, " ");
 
             //on test si on est dans le canevas et hors des marge
             if (current_cl < canevas_cl && current_ln < canevas_ln && y > margin_ln && i > margin_cl) {
                 if (final.data[current_ln][current_cl]) {
-                    symbol = (char) 219;
+                    strcpy(symbol, "█");
                 }
             }
-            printf("%c", symbol);
+            printf("%s", symbol);
         }
         printf("\n");
     }
 
     getchar();
+}
+
+int printCanevas(canevas img){
+    gridGenerator(img);
 }
