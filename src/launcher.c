@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 
         case 2:
 
-            executor(2, global);
+            executor(2, transformator(global));
 
             
 
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
             //Exec Intéractif
 
 
-            executor(3, global);
+            executor(3, transformator(global));
 
            
 
@@ -224,10 +224,10 @@ void executor(int a, char **global)
             printf("exec marche pas\n");
             break;
         case 2:
-            execv("./eXiaSaver2", "");
+            execv("./eXiaSaver2", NULL);
             break;
         case 3:
-            execv("./eXiaSaver3", ""); 
+            execv("./eXiaSaver3", NULL); 
             break;
     }
 
