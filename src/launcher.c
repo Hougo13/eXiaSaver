@@ -16,6 +16,8 @@
 
 int rand_a_b(int, int);
 
+void executor(int, char);
+
 int selecteur();
 
 int main(int argc, char *argv[])
@@ -134,12 +136,13 @@ int main(int argc, char *argv[])
 
             break;
 
-            //Exec Static
-
-
+            executor(1, global);
+            printf("test1\n");
         case 2:
 
-            //Exec Dynamique
+            executor(2, global);
+
+            printf("test2\n");
 
             break;
 
@@ -156,8 +159,15 @@ int main(int argc, char *argv[])
             ret_x = putenv(coord_x);
             ret_y = putenv(coord_y);
 
+<<<<<<<
             //Exec Intéractif
 
+=======
+            executor(3, global);
+
+            printf("test3\n");
+
+>>>>>>>
             break;
 
     }
@@ -171,16 +181,23 @@ int rand_a_b(int a, int b)
     return rand()%b+a;
 }
 
-int selecteur ()
+
+void executor(int a, char global)
 {
-    int a;
+    switch(a)
+    {
+        case 1:
+            execv("eXiaSaver1", global);
+            break;
+        case 2:
+            execv("eXiaSaver2", "");
+            break;
+        case 3:
+            execv("eXiaSaver3", "");
+            break;
+    }
 
-    printf("Entrez le numero du type:\n");
-    printf("1. Static\n");
-    printf("2. Dynamique\n");
-    printf("3. Interactif\n");
 
-    scanf("%d", &a);
 
-    return a;
+
 }
