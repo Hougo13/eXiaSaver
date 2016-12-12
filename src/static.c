@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     }
 
     char *url = imgUrl(argv[1]);
-    printf("%s", url);
+    printf("%s\n", url);
     imgLoad(url);
 
     return 0;
