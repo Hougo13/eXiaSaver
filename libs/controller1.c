@@ -8,7 +8,25 @@
 
 int imgLoad(char *url){
     canevas img = extractFile(url);
-    printCanevas(img);
+
+    canevas_pos_list array;
+    array.size = 2;
+
+    array.data = malloc(sizeof(canevas_pos)*2);
+
+    array.data[0].img = img;
+    array.data[0].x = 0;
+    array.data[0].y = 0;
+
+    array.data[1].img = img;
+    array.data[1].x = 15;
+    array.data[1].y = 10;
+
+    canevas result = canevasGenerator(20, 30, array);
+
+    //grid g = gridGenerator(result);
+
+    printCanevas(result);
 }
 
 char *imgUrl(char *name){

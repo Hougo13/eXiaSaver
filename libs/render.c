@@ -18,7 +18,7 @@ canevas extractFile(char *name)
     int a, b;
     canevas img;
 
-    if(pipe(descriptor) != 0){
+    /*if(pipe(descriptor) != 0){
         printf("Erreur pendant la creation du tube\n");
         exit(EXIT_FAILURE);
     }
@@ -48,7 +48,7 @@ canevas extractFile(char *name)
             printf("%s", msg);
             //printf("%d", img.magic, img.colonnes, img.lignes);
 
-    }
+    }*/
     return readFile(name);
 }
 
@@ -194,7 +194,6 @@ canevas readStream(int descriptor[2]){
 }
 
 grid gridGenerator(canevas final){
-
     //on declare la nouvelle grille
     int canevas_cl, canevas_ln, case_cl, case_ln, current_cl, current_ln, margin_ln, margin_cl, bit_state;
     grid g;
@@ -202,6 +201,11 @@ grid gridGenerator(canevas final){
     //On recup le taille su shell
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
+
+    if(w.ws_col < final.colonnes || w.ws_row < final.lignes){
+        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row, final.colonnes, final.lignes);
+        exit(EXIT_FAILURE);
+    }
 
     g.colonnes = w.ws_col;
     g.lignes = w.ws_row;
@@ -273,4 +277,35 @@ void printGrid(grid g){
         }
         printf("\n");
     }
+}
+
+canevas canevasGenerator(int height, int width, canevas_pos_list array){
+    canevas img;
+    img.lignes = height;
+    img.colonnes = width;
+    img.data = malloc(sizeof(int*)*height);
+    for (int y = 0; y < height; y++) {
+        img.data[y] = malloc(sizeof(int)*width);
+        for (int x = 0; x < width; x++) {
+            img.data[y][x] = ifPixel(y,x,array);
+            printf("%d", img.data[y][x]);
+        }
+        printf("\n");
+    }
+    return img;
+}
+
+int ifPixel(int y, int x, canevas_pos_list array){
+    int value = 0;
+    canevas_pos current;
+    for (int i = 0; i < array.size; i++){
+        current = array.data[i];
+        if(y >= current.y && x >= current.x){
+            if(y < current.img.lignes + current.y && x < current.img.colonnes + current.x){
+                if(current.img.data[y-current.y][x-current.x] == 1)
+                    value = 1;
+            }
+        }
+    }
+    return value;
 }
