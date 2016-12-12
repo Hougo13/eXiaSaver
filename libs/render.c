@@ -10,6 +10,49 @@
 
 canevas extractFile(char *name)
 {
+    pid_t pid;
+    int descriptor[2];
+    char msg[2];
+    char msg2[3];
+    int prevst;
+    int a, b;
+    canevas img;
+
+    if(pipe(descriptor) != 0){
+        printf("Erreur pendant la creation du tube\n");
+        exit(EXIT_FAILURE);
+    }
+
+    pid = fork();
+    switch (pid){
+        case -1:
+            printf("Erreur pendant la creation du fils\n");
+            exit(EXIT_FAILURE);
+        case 0:
+            //streamFile(name, descriptor);
+            close(descriptor[1]);
+            prevst = dup(1);
+            dup2(descriptor[0], 1);
+            printf("ok");
+            dup2(prevst, 1);
+            printf("ok2");
+            exit(EXIT_SUCCESS);
+        default:
+            //img = readStream(descriptor);
+            close(descriptor[0]);
+            prevst = dup(0);
+            dup2(descriptor[1], 0);;
+            scanf("%s", msg);
+            dup2(prevst, 0);
+            wait(NULL);
+            printf("%s", msg);
+            //printf("%d", img.magic, img.colonnes, img.lignes);
+
+    }
+    return readFile(name);
+}
+
+canevas readFile(char *name){
     /* On initialise les 2 valeurs de bases qui serviront dans les boucles For */
     int i;
     int j;
@@ -68,6 +111,88 @@ canevas extractFile(char *name)
     return result;
 }
 
+void streamFile(char *name, int *descriptor){
+
+    int saveSTDOUT;
+    close(descriptor[1]);
+    saveSTDOUT = dup(STDOUT_FILENO);
+    //dup2(descriptor[0], STDOUT_FILENO);
+    //close(descriptor[0]);
+
+    /* On initialise les 2 valeurs de bases qui serviront dans les boucles For */
+    int i;
+    int j;
+
+    /* On initialise les valeurs qui vont r�cup�rer les donn�es dans les fichiers */
+    int lignes;
+    int colonnes;
+
+    int magic;/* Valeur du nombre magic (P est g�n�ral, on n'en a donc pas besoin) */
+
+    /* On initialise l'ouverture du fichier en fonction du nom qui est entr� dans la fonction */
+    FILE* fichier = NULL;
+
+    fichier = fopen(name, "r+");
+
+    dup2(fichier, descriptor[0]);
+    /* On "saute" le caract�re "P" car inutile */
+    fgetc(fichier);
+
+    /* On r�cup�re le nombre magic*/
+    fscanf(fichier, "%d", &magic);
+    printf("%d", magic);
+
+    /* On r�cup�re les valuers des lignes et des colonnes */
+    fscanf(fichier, "%d %d", &colonnes, &lignes);
+    printf("%d %d", colonnes, lignes);
+
+    /* On cr�� une variable de type de notre structure */
+    canevas result;
+
+    /* On initialise les valeurs de notre variable de type structure */
+    result.colonnes = colonnes;
+    result.lignes = lignes;
+    result.magic = magic;
+    strcpy(result.nom, name);
+
+    /* On alloue de mani�re dynamique notre tableau de pointeurs */
+    result.data = malloc(sizeof(int*) * lignes);
+
+    for(i=0; i < lignes; i++)
+    {
+        result.data[i] = malloc(sizeof(int) * colonnes);
+    }
+
+    /* On stocke dans notre tableau de pointeurs les valeurs binaires de notre fichier*/
+    for(i=0; i < lignes; i++)
+    {
+        for(j=0; j < colonnes; j++)
+        {
+            fscanf(fichier, "%d", &result.data[i][j]);
+        }
+    }
+
+    /* On ferme le fichier*/
+    fclose(fichier);
+
+    dup2(saveSTDOUT, STDOUT_FILENO);
+}
+
+canevas readStream(int descriptor[2]){
+    int saveSTDIN;
+    close(descriptor[1]);
+    saveSTDIN = dup(STDIN_FILENO);
+    dup2(descriptor[0], STDIN_FILENO);
+
+    canevas img;
+
+    scanf("%d", img.magic);
+    scanf("%d %d", img.colonnes, img.lignes);
+
+    dup2(saveSTDIN, STDIN_FILENO);
+    return img;
+}
+
 grid gridGenerator(canevas final){
 
     //on declare la nouvelle grille
@@ -92,9 +217,9 @@ grid gridGenerator(canevas final){
 
     //Conserve le ratio x/y
     if(case_ln < case_cl){
-        case_cl = case_ln;
+        case_cl = case_ln*2;
     } else{
-        case_ln = case_cl;
+        case_ln = case_cl/2;
     }
 
     //On stocke le nombre de ligne et colonne de marge pour centrer

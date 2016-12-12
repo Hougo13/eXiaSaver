@@ -17,7 +17,7 @@ char *imgUrl(char *name){
 
     char *path = getenv("EXIASAVER1_PBM");
     if(path == NULL || path[0]=='\0'){
-        path = "img/";
+        path = "img/Static/";
     }
 
     url = malloc(sizeof(path)+sizeof(name));

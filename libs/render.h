@@ -20,6 +20,9 @@
     } grid;
 
     canevas extractFile(char *name);
+    canevas readFile(char *name);
+    void streamFile(char *name, int descriptor[2]);
+    canevas readStream(int descriptor[2]);
     grid gridGenerator(canevas final);
     int printCanevas(canevas img);
     void printGrid(grid g);
