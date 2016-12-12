@@ -284,14 +284,26 @@ canevas canevasGenerator(int height, int width, canevas_pos_list array){
     img.lignes = height;
     img.colonnes = width;
     img.data = malloc(sizeof(int*)*height);
+
     for (int y = 0; y < height; y++) {
+        img.data[y] = malloc(sizeof(int)*width);
+        for (int x = 0; x < width; x++) {
+            img.data[y][x] = 0;
+        }
+    }
+
+    for(int i = 0; i < array.size; i++){
+        img = mergeCanevas(img, array.data[i]);
+    }
+
+    /*for (int y = 0; y < height; y++) {
         img.data[y] = malloc(sizeof(int)*width);
         for (int x = 0; x < width; x++) {
             img.data[y][x] = ifPixel(y,x,array);
             printf("%d", img.data[y][x]);
         }
         printf("\n");
-    }
+    }*/
     return img;
 }
 
@@ -308,4 +320,30 @@ int ifPixel(int y, int x, canevas_pos_list array){
         }
     }
     return value;
+}
+
+canevas mergeCanevas(canevas img, canevas_pos element){
+    int cx, cy;
+    for (int y = 0; y < element.img.lignes; y++) {
+        for (int x = 0; x < element.img.colonnes; x++) {
+            if (element.img.data[y][x] == 1){
+                cy = y + element.y;
+                cx = x + element.x;
+                while (cy >= img.lignes){
+                    cy = cy - img.lignes;
+                }
+                while (cx >= img.colonnes){
+                    cx = cx - img.colonnes;
+                }
+                while (cy < 0){
+                    cy = cy + img.colonnes;
+                }
+                while (cx < 0){
+                    cx = cx + img.colonnes;
+                }
+                img.data[cy][cx] = 1;
+            }
+        }
+    }
+    return img;
 }
