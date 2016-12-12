@@ -12,11 +12,17 @@
 #endif
 
 #include <time.h>   // pour rand
+ 
+#include <unistd.h> //execv
 
 
 int rand_a_b(int, int);
 
+void executor(int, char **global);
+
 int selecteur();
+
+char **transformator (char global[30]);
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +35,11 @@ int main(int argc, char *argv[])
     int nb_files = 0;
     int i;
 
+    char* Global;
+
     char **tabXtab;
+
+
 
 
     char *path;
@@ -44,8 +54,14 @@ int main(int argc, char *argv[])
     FILE* fichier = NULL;
 
 
+    printf("Type:\n");
+    printf("1. Static\n");
+    printf("2. Dynamique\n");
+    printf("3. Intéracti\n");
+
+
     //On choisit le type de fond ! A passer en aléatoire !
-    selec = selecteur();
+    scanf("%d",&selec); //rand_a_b(1, 4);
 
 
 
@@ -104,8 +120,9 @@ int main(int argc, char *argv[])
 
 
             //Génération d'un nombre aléatoire
-            alea = rand_a_b(1, nb_files);
+            alea = rand_a_b(1, nb_files+1);
             printf("alea= %d\n", alea);
+
 
             //Choix de l'image en fonction du nombre généré
             switch(alea)
@@ -132,14 +149,24 @@ int main(int argc, char *argv[])
                     break;
             }
 
+            printf("je suis l'ancien global: %s\n", global);
+
+            
+
+            
+            executor(1, transformator(global));
+
             break;
 
-            //Exec Static
-
+            
+            
+        
 
         case 2:
 
-            //Exec Dynamique
+            executor(2, global);
+
+            
 
             break;
 
@@ -156,7 +183,14 @@ int main(int argc, char *argv[])
             ret_x = putenv(coord_x);
             ret_y = putenv(coord_y);
 
+
             //Exec Intéractif
+
+
+            executor(3, global);
+
+           
+
 
             break;
 
@@ -168,19 +202,53 @@ int main(int argc, char *argv[])
 
 int rand_a_b(int a, int b)
 {
-    return rand()%b+a;
+
+    srand(time(NULL));
+    return rand()%(b-a) +a;
 }
 
-int selecteur ()
+
+void executor(int a, char **global)
 {
-    int a;
+   
+    
+    switch(a)
+    {
+        
+        case 1:
+            
+            printf("je suis global: %s\n", global[1]);
 
-    printf("Entrez le numero du type:\n");
-    printf("1. Static\n");
-    printf("2. Dynamique\n");
-    printf("3. Interactif\n");
+            execv("./eXiaSaver1", global);
+            
+            printf("exec marche pas\n");
+            break;
+        case 2:
+            execv("./eXiaSaver2", "");
+            break;
+        case 3:
+            execv("./eXiaSaver3", ""); 
+            break;
+    }
 
-    scanf("%d", &a);
 
-    return a;
+
+
 }
+
+ char **transformator (char global[30])
+ {
+    int i;
+    int taille;
+    char **global_transf;
+
+    global_transf = malloc(sizeof(char*) * 2);
+    global_transf[0] = "./eXiaSaver1";
+    global_transf[1] = global;
+
+    printf("je suis le global dans le transformator: %s\n", global_transf[1]);
+
+    return global_transf;
+
+ }
+
