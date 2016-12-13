@@ -342,7 +342,7 @@ canevas mergeCanevas(canevas img, canevas_pos element){
                     cx = cx - img.colonnes;
                 }
                 while (cy < 0){
-                    cy = cy + img.colonnes;
+                    cy = cy + img.lignes;
                 }
                 while (cx < 0){
                     cx = cx + img.colonnes;
