@@ -64,8 +64,6 @@ canevas readFile(char *name){
 
     int magic;/* Valeur du nombre magic (P est g�n�ral, on n'en a donc pas besoin) */
 
-
-
     /* On initialise l'ouverture du fichier en fonction du nom qui est entr� dans la fonction */
     FILE* fichier = NULL;
     fichier = fopen(name, "r+");
@@ -251,21 +249,28 @@ grid gridGenerator(canevas final){
     return g;
 }
 
-int printCanevas(canevas img){
+int printCanevas(canevas img, int auto_refresh){
     grid g, prev_g;
 
-    while(1){
+    if (auto_refresh == 0){
         g = gridGenerator(img);
-        if(g.colonnes != prev_g.colonnes || g.lignes != prev_g.lignes){
-            printGrid(g);
+        printGrid(g);
+    }else{
+        while(1){
+            g = gridGenerator(img);
+            if(g.colonnes != prev_g.colonnes || g.lignes != prev_g.lignes){
+                printGrid(g);
+            }
+            prev_g = g;
+            sleep(auto_refresh);
         }
-        prev_g = g;
-        sleep(1);
     }
 
 }
 
 void printGrid(grid g){
+
+    system("clear");
 
     for(int y = 0; y < g.lignes; y++){
 
