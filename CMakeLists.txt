@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5.1)
 project(eXiaSaver)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.c)
-add_executable(eXiaSaver ${SOURCE_FILES})
+add_executable(eXiaSaver src/launcher.c)
+add_executable(eXiaSaver1 src/static.c)
+add_executable(eXiaSaver2 src/dynamic.c)
+add_executable(eXiaSaver3 src/interactif.c)

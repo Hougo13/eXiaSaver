@@ -34,3 +34,13 @@
 
 cmake-build-debug
 .idea
+.idea
+CMakeFiles
+Makefile
+eXiaSaver1
+eXiaSaver2
+eXiaSaver3
+eXiaSaver
+CMakeCache.txt
+cmake_install.cmake
+eXiaSaver.cbp
