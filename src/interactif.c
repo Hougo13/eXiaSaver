@@ -3,9 +3,20 @@
 //
 
 #include <stdio.h>
-#include "../libs/controller.c"
+#include <stdlib.h>
+#include "../libs/controller3.c"
 
 int main(int argc, char *argv[]) {
-    printf("Entrez le nom du fichier: ");
+
+    if(argc != 2){
+        exit(EXIT_FAILURE);
+    }
+
+    int x,y;
+    sscanf(argv[1], "%dx%d", &x, &y);
+
+    direction d = RIGHT;
+    watchPlane(x, y, d);
+
     return 0;
 }

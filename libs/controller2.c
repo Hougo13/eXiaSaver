@@ -41,7 +41,6 @@ char **getURLs(char h[8]){
     for (int i = 0; i < 8; i++) {
         name = getName(h[i]);
         urls[i] = imgUrl(name);
-        free(name);
     }
 
     return urls;
@@ -51,37 +50,37 @@ char *getName(int c){
     char *name;
     switch (c){
         case '0':
-            name = strdup("img_0.pbm");
+            name = "img_0.pbm";
             break;
         case '1':
-            name = strdup("img_1.pbm");
+            name = "img_1.pbm";
             break;
         case '2':
-            name = strdup("img_2.pbm");
+            name = "img_2.pbm";
             break;
         case '3':
-            name = strdup("img_3.pbm");
+            name = "img_3.pbm";
             break;
         case '4':
-            name = strdup("img_4.pbm");
+            name = "img_4.pbm";
             break;
         case '5':
-            name = strdup("img_5.pbm");
+            name = "img_5.pbm";
             break;
         case '6':
-            name = strdup("img_6.pbm");
+            name = "img_6.pbm";
             break;
         case '7':
-            name = strdup("img_7.pbm");
+            name = "img_7.pbm";
             break;
         case '8':
-            name = strdup("img_8.pbm");
+            name = "img_8.pbm";
             break;
         case '9':
-            name = strdup("img_9.pbm");
+            name = "img_9.pbm";
             break;
         case ':':
-            name = strdup("img_double.pbm");
+            name = "img_double.pbm";
             break;
     }
     return name;
