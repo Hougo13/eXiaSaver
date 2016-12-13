@@ -239,7 +239,6 @@ grid gridGenerator(canevas final){
             g.data[y][i] = 0;
 
             //on test si on est dans le canevas et hors des marge
-            if (current_cl < canevas_cl && current_ln < canevas_ln && y > margin_ln && i > margin_cl) {
             if (current_cl < canevas_cl && current_ln < canevas_ln && y >= margin_ln && i >= margin_cl) {
                 if (final.data[current_ln][current_cl]) {
                     g.data[y][i] = 1;
