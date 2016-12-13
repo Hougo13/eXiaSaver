@@ -41,6 +41,8 @@ void printPlane(int x, int y, direction d){
     canevas img = canevasGenerator(40, 80, pl);
     printCanevas(img, 0);
 
+    saveCoord(x, y);
+
 }
 
 void watchPlane(int x, int y, direction d){
@@ -95,4 +97,15 @@ char *getName(direction d){
             break;
     }
     return name;
+}
+
+void saveCoord(int coordX, int coordY){
+
+    FILE* fichier = NULL;
+    
+    fichier = fopen("cache/coord_plane.txt", "r+");
+    fprintf(fichier, "%d %d", coordX, coordY);
+    fclose(fichier);
+
+
 }

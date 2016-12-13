@@ -38,10 +38,9 @@ int main(int argc, char *argv[])
 
     char* Global;
 
-    
-
     char **tabXtab;
 
+    char coord_final[30];
 
     char *path;
 
@@ -184,9 +183,9 @@ int main(int argc, char *argv[])
             printf("coord_x: %s\n", coord_x);
             printf("coord_y: %s\n", coord_y);
 
-            sprintf(global, "%sx%s", coord_x, coord_y);
+            sprintf(coord_final, "%sx%s", coord_x, coord_y);
 
-            executor(3, transformator(global, 3));
+            executor(3, transformator(coord_final, 3));
 
             break;
 
@@ -237,9 +236,6 @@ void executor(int a, char **global)
     {
         
         case 1:
-            
-            printf("je suis global: %s\n", global[1]);
-
             execv("./eXiaSaver1", global);
             break;
         case 2:
@@ -248,7 +244,7 @@ void executor(int a, char **global)
         case 3:            
             printf("je suis global: %s\n", global[1]);
 
-            execv("./eXiaSaver3", NULL); 
+            execv("./eXiaSaver3", global); 
             break;
     }
 
@@ -278,6 +274,7 @@ void executor(int a, char **global)
             break;
         case 3:
             global_transf[0] = "./eXiaSaver3";
+            
             break;
     }   
     
