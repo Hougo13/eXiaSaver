@@ -26,7 +26,7 @@ int imgLoad(char *url){
 
     //grid g = gridGenerator(result);
 
-    printCanevas(result);
+    printCanevas(result, 1);
 }
 
 char *imgUrl(char *name){
@@ -38,7 +38,7 @@ char *imgUrl(char *name){
         path = "img/Static/";
     }
 
-    url = malloc(sizeof(path)+sizeof(name));
+    url = malloc(strlen(path) + strlen(name));
 
     sprintf(url, "%s%s", path, name);
 

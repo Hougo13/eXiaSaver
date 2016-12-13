@@ -41,7 +41,7 @@
 
     canevas canevasGenerator(int height, int width, canevas_pos_list array);
     canevas mergeCanevas(canevas img, canevas_pos element);
-    int printCanevas(canevas img);
+    int printCanevas(canevas img, int auto_refresh);
 
     int ifPixel(int y, int x, canevas_pos_list array);
 

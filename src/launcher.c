@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 {
 
     system("clear");
+    system("setterm -cursor off");
 
     int selec;
     int alea;
