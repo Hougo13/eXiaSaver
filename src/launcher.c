@@ -22,7 +22,7 @@ void executor(int, char **global);
 
 int selecteur();
 
-char **transformator (char global[30]);
+char **transformator (char global[30], int select_transfo);
 
 int main(int argc, char *argv[])
 {
@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
 
     char* Global;
 
+    
+
     char **tabXtab;
-
-
 
 
     char *path;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     printf("Type:\n");
     printf("1. Static\n");
     printf("2. Dynamique\n");
-    printf("3. Intéracti\n");
+    printf("3. Intéractif\n");
 
 
     //On choisit le type de fond ! A passer en aléatoire !
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
             
 
             
-            executor(1, transformator(global));
+            executor(1, transformator(global, 1));
 
             break;
 
@@ -165,37 +165,36 @@ int main(int argc, char *argv[])
 
         case 2:
 
-            executor(2, transformator(global));
+            strcpy(global, "5x3");
 
-            
+
+    
+
+            executor(2, transformator(global, 2));
 
             break;
 
         case 3:
 
             //Ouverture du fichier qui contient les coordonnées de base de l'avion et lecture de celles-ci
-            fichier = fopen("coord_plane.txt", "r+");
+            fichier = fopen("cache/coord_plane.txt", "r+");
             fscanf(fichier, "%s %s", &coord_x, &coord_y);
             fclose(fichier);
 
             printf("coord_x: %s\n", coord_x);
             printf("coord_y: %s\n", coord_y);
 
-            ret_x = putenv(coord_x);
-            ret_y = putenv(coord_y);
+            sprintf(global, "%sx%s", coord_x, coord_y);
 
-
-            //Exec Intéractif
-
-
-            executor(3, transformator(global));
-
-           
-
+            executor(3, transformator(global, 3));
 
             break;
 
     }
+
+
+    
+
 
     return 0;
 }
@@ -211,7 +210,28 @@ int rand_a_b(int a, int b)
 
 void executor(int a, char **global)
 {
-   
+    
+    char log[100];
+
+
+    time_t temps;
+    struct tm instant;
+
+    time(&temps);
+    instant =* localtime(&temps);
+
+    sprintf(log, "%d/%d %d || %d:%d:%d || {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, global[1]);
+
+    printf("je suis log: %s\n", log);
+
+    FILE* fichier = NULL;
+    fichier = fopen("cache/log.txt", "r+");
+    while(fgetc(fichier) != EOF);
+    fprintf(fichier, "%s\n",log);
+    fclose(fichier);
+
+
+
     
     switch(a)
     {
@@ -221,13 +241,13 @@ void executor(int a, char **global)
             printf("je suis global: %s\n", global[1]);
 
             execv("./eXiaSaver1", global);
-            
-            printf("exec marche pas\n");
             break;
         case 2:
             execv("./eXiaSaver2", NULL);
             break;
-        case 3:
+        case 3:            
+            printf("je suis global: %s\n", global[1]);
+
             execv("./eXiaSaver3", NULL); 
             break;
     }
@@ -237,19 +257,35 @@ void executor(int a, char **global)
 
 }
 
- char **transformator (char global[30])
+ char **transformator (char global[30], int select_transfo)
  {
+    
     int i;
     int taille;
     char **global_transf;
 
     global_transf = malloc(sizeof(char*) * 2);
-    global_transf[0] = "./eXiaSaver1";
-    global_transf[1] = global;
 
-    printf("je suis le global dans le transformator: %s\n", global_transf[1]);
+
+    
+    switch(select_transfo)
+    {
+        case 1:
+            global_transf[0] = "./eXiaSaver1";
+            break;
+        case 2:
+            global_transf[0] = "./eXiaSaver2";
+            break;
+        case 3:
+            global_transf[0] = "./eXiaSaver3";
+            break;
+    }   
+    
+    global_transf[1] = global;
 
     return global_transf;
 
  }
+
+
 
