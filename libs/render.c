@@ -192,7 +192,7 @@ canevas readStream(int descriptor[2]){
     return img;*/
 }
 
-grid gridGenerator(canevas final){
+grid gridGenerator(canevas final, int centered){
     //on declare la nouvelle grille
     int canevas_cl, canevas_ln, case_cl, case_ln, current_cl, current_ln, margin_ln, margin_cl, bit_state;
     grid g;
@@ -201,13 +201,20 @@ grid gridGenerator(canevas final){
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
 
-    if(w.ws_col < final.colonnes || w.ws_row < final.lignes){
-        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row, final.colonnes, final.lignes);
+    if(w.ws_col < final.colonnes*2 || w.ws_row-1 < final.lignes){
+        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row-1, final.colonnes, final.lignes);
         exit(EXIT_FAILURE);
     }
 
-    g.colonnes = w.ws_col;
-    g.lignes = w.ws_row;
+    //printf("(%d,%d)->%d\n", w.ws_row, (final.lignes - 1),w.ws_row < (final.lignes - 1));
+
+    if (centered == 1){
+        g.colonnes = w.ws_col;
+        g.lignes = w.ws_row - 1;
+    } else {
+        g.colonnes = final.colonnes*2;
+        g.lignes = final.lignes;
+    }
     g.data = malloc(sizeof(int*) * g.lignes);
 
     //On stocke le nombre de ligne et colonne dans le canevas
@@ -215,23 +222,30 @@ grid gridGenerator(canevas final){
     canevas_ln = final.lignes;
 
     //On stocke le nombre de ligne et colonne d'une case du canevas
-    case_ln = w.ws_row/canevas_ln;
-    case_cl = w.ws_col/canevas_cl;
+    case_ln = g.lignes/canevas_ln;
+    case_cl = g.colonnes/canevas_cl;
+    //printf("(%d,%d)(%d,%d)(%d,%d)(%d,%d)\n", w.ws_row, w.ws_col, final.lignes, final.colonnes, g.lignes, g.colonnes, canevas_ln, canevas_cl);
 
     //Conserve le ratio x/y
-    if(case_ln < case_cl){
+    if(case_ln <= case_cl){
         case_cl = case_ln*2;
-    } else{
+    } else if(case_cl < case_ln){
         case_ln = case_cl/2;
     }
 
     //On stocke le nombre de ligne et colonne de marge pour centrer
-    margin_cl = (w.ws_col - case_cl * canevas_cl)/2;
-    margin_ln = (w.ws_row - case_ln * canevas_ln)/2;
+    if(centered == 1){
+        margin_cl = (g.colonnes - case_cl * canevas_cl)/2;
+        margin_ln = (g.lignes - case_ln * canevas_ln)/2;
+    }else{
+        margin_cl = 0;
+        margin_ln = 0;
+    }
 
-    for(int y=0; y < w.ws_row; y++){
+    //printf("(%d,%d)\n", case_ln, case_cl);
+    for(int y=0; y < g.lignes; y++){
         g.data[y] = malloc(sizeof(int) * g.colonnes);
-        for(int i = 0 ; i < w.ws_col; i++) {
+        for(int i = 0 ; i < g.colonnes; i++) {
             //On test dans quel case on se situe
             current_ln = (y - margin_ln) / case_ln;
             current_cl = (i - margin_cl) / case_cl;
@@ -253,11 +267,11 @@ int printCanevas(canevas img, int auto_refresh){
     grid g, prev_g;
 
     if (auto_refresh == 0){
-        g = gridGenerator(img);
+        g = gridGenerator(img, 1);
         printGrid(g);
     }else{
         while(1){
-            g = gridGenerator(img);
+            g = gridGenerator(img, 1);
             if(g.colonnes != prev_g.colonnes || g.lignes != prev_g.lignes){
                 printGrid(g);
             }
@@ -283,6 +297,17 @@ void printGrid(grid g){
         }
         printf("\n");
     }
+}
+
+canevas canevasFullscreenGenerator(canevas_pos_list array){
+    //On recup le taille su shell
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+
+    int colonnes = w.ws_col/2;
+    int lignes = w.ws_row-1;
+
+    return canevasGenerator(lignes, colonnes, array);
 }
 
 canevas canevasGenerator(int height, int width, canevas_pos_list array){
