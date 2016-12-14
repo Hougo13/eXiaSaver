@@ -7,19 +7,25 @@
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#define BUFFER_SIZE 256
 
 canevas extractFile(char *name)
 {
     pid_t pid;
     int descriptor[2];
+    int descriptor2[2];
     char msg[2];
     char msg2[3];
     int prevst;
     int a, b;
     canevas img;
 
-    /*
     if(pipe(descriptor) != 0){
+        printf("Erreur pendant la creation du tube\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if(pipe(descriptor2) != 0){
         printf("Erreur pendant la creation du tube\n");
         exit(EXIT_FAILURE);
     }
@@ -30,27 +36,16 @@ canevas extractFile(char *name)
             printf("Erreur pendant la creation du fils\n");
             exit(EXIT_FAILURE);
         case 0:
-            //streamFile(name, descriptor);
-            close(descriptor[1]);
-            prevst = dup(1);
-            dup2(descriptor[0], 1);
-            printf("ok");
-            dup2(prevst, 1);
-            printf("ok2");
+            streamFile(name, descriptor);
             exit(EXIT_SUCCESS);
         default:
-            //img = readStream(descriptor);
-            close(descriptor[0]);
-            prevst = dup(0);
-            dup2(descriptor[1], 0);;
-            scanf("%s", msg);
-            dup2(prevst, 0);
+            img = readStream(descriptor);
             wait(NULL);
-            printf("%s", msg);
-            //printf("%d", img.magic, img.colonnes, img.lignes);
+            //printf("%d %d %d", img.magic, img.colonnes, img.lignes);
 
-    }*/
-    return readFile(name);
+    }
+    //exit(0);
+    return img; //readFile(name);
 }
 
 canevas readFile(char *name){
@@ -111,85 +106,91 @@ canevas readFile(char *name){
 }
 
 void streamFile(char *name, int *descriptor){
-/*
-    int saveSTDOUT;
-    close(descriptor[1]);
-    saveSTDOUT = dup(STDOUT_FILENO);
-    //dup2(descriptor[0], STDOUT_FILENO);
-    //close(descriptor[0]);
 
-    // On initialise les 2 valeurs de bases qui serviront dans les boucles For
-    int i;
-    int j;
+    char buffer[BUFFER_SIZE];
+    int lignes, colonnes, magic, i = 0;
+    char c;
 
-    // On initialise les valeurs qui vont r�cup�rer les donn�es dans les fichiers
-    int lignes;
-    int colonnes;
-
-    int magic;/* Valeur du nombre magic (P est g�n�ral, on n'en a donc pas besoin)
+    close(descriptor[0]);
 
     // On initialise l'ouverture du fichier en fonction du nom qui est entr� dans la fonction
     FILE* fichier = NULL;
 
     fichier = fopen(name, "r+");
 
-    dup2(fichier, descriptor[0]);
     // On "saute" le caract�re "P" car inutile
     fgetc(fichier);
 
     // On r�cup�re le nombre magic
     fscanf(fichier, "%d", &magic);
-    printf("%d", magic);
 
     //On r�cup�re les valuers des lignes et des colonnes
     fscanf(fichier, "%d %d", &colonnes, &lignes);
-    printf("%d %d", colonnes, lignes);
 
-    //On cr�� une variable de type de notre structure
-    canevas result;
+    //On envoie les parametres du pbm
+    sprintf(buffer, "(%d,%d:%d)", magic, lignes, colonnes);
+    write(descriptor[1], buffer, BUFFER_SIZE);
 
-    //On initialise les valeurs de notre variable de type structure
-    result.colonnes = colonnes;
-    result.lignes = lignes;
-    result.magic = magic;
-    strcpy(result.nom, name);
+    do {
+        c = fgetc(fichier);
 
-    //On alloue de mani�re dynamique notre tableau de pointeurs
-    result.data = malloc(sizeof(int*) * lignes);
-
-    for(i=0; i < lignes; i++)
-    {
-        result.data[i] = malloc(sizeof(int) * colonnes);
-    }
-
-    //On stocke dans notre tableau de pointeurs les valeurs binaires de notre fichier
-    for(i=0; i < lignes; i++)
-    {
-        for(j=0; j < colonnes; j++)
-        {
-            fscanf(fichier, "%d", &result.data[i][j]);
+        //delete comments
+        if (c == '#'){
+            while (c != '\n')
+                c = fgetc(fichier);
         }
-    }
 
-    // On ferme le fichier
+        if (c == '0' || c == '1'){
+            buffer[i] = c;
+            i++;
+        }
+
+    } while (c != EOF);
+
+    write(descriptor[1], buffer, BUFFER_SIZE);
+
+    close(descriptor[1]);
+
     fclose(fichier);
 
-    dup2(saveSTDOUT, STDOUT_FILENO);*/
 }
 
-canevas readStream(int descriptor[2]){
-    /*int saveSTDIN;
-    close(descriptor[1]);
-    saveSTDIN = dup(STDIN_FILENO);
-    dup2(descriptor[0], STDIN_FILENO);
-
+canevas readStream(int *descriptor){
+    char buffer[BUFFER_SIZE];
+    char binary[BUFFER_SIZE];
+    int magic, col, row, x = 0;
     canevas img;
 
-    scanf("%d", img.magic);
-    scanf("%d %d", img.colonnes, img.lignes);
+    close(descriptor[1]);
 
-    dup2(saveSTDIN, STDIN_FILENO);
-    return img;*/
+    read(descriptor[0], buffer, BUFFER_SIZE);
+
+    sscanf(buffer, "(%d,%d:%d)", &magic, &row, &col);
+
+    read(descriptor[0], buffer, BUFFER_SIZE);
+    strcpy(binary, buffer);
+
+    close(descriptor[0]);
+
+    img.lignes = row;
+    img.colonnes = col;
+    img.magic = magic;
+    img.data = malloc(sizeof(int*)*row);
+
+    for (int y = 0; y < row; y++){
+        //printf("%s", buffer);
+        img.data[y] = malloc(sizeof(int)*col);
+        for (int x = 0; x < col; ++x) {
+            if (buffer[y*col + x] == '1'){
+                img.data[y][x] = 1;
+            }else{
+                img.data[y][x] = 0;
+            }
+        }
+        //printf("\n");
+    }
+
+    return img;
 }
 
 grid gridGenerator(canevas final, int centered){

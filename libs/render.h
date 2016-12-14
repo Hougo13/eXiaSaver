@@ -33,8 +33,8 @@
     canevas extractFile(char *name);
 
     canevas readFile(char *name);
-    void streamFile(char *name, int descriptor[2]);
-    canevas readStream(int descriptor[2]);
+    void streamFile(char *name, int *descriptor);
+    canevas readStream(int *descriptor);
 
     grid gridGenerator(canevas final, int centered);
     void printGrid(grid g);
