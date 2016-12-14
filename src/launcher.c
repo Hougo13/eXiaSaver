@@ -15,8 +15,10 @@
  
 #include <unistd.h> //execv
 
+#include <string.h>
 
-int rand_a_b(int, int);
+
+int rand_a_b(int a, int b);
 
 void executor(int, char **global);
 
@@ -38,6 +40,10 @@ int main(int argc, char *argv[])
 
     char* Global;
 
+    char chaine_log[50];
+    char chaine_save[50];
+    int compt;
+
     char **tabXtab;
 
     char coord_final[30];
@@ -53,16 +59,22 @@ int main(int argc, char *argv[])
     //Pointeur pour se déplacer dans les fichiers
     FILE* fichier = NULL;
 
-
     printf("Type:\n");
     printf("1. Static\n");
     printf("2. Dynamique\n");
     printf("3. Intéractif\n");
+    printf("4. Log\n");
+
 
 
     //On choisit le type de fond ! A passer en aléatoire !
     scanf("%d",&selec); //rand_a_b(1, 4);
 
+    if(argc > 1 )
+    {
+        if (strcmp(argv[1], "log") == 0)
+        {selec = 4;}
+    }   
 
 
     switch(selec)
@@ -150,9 +162,6 @@ int main(int argc, char *argv[])
             }
 
             printf("je suis l'ancien global: %s\n", global);
-
-            
-
             
             executor(1, transformator(global, 1));
 
@@ -165,9 +174,6 @@ int main(int argc, char *argv[])
         case 2:
 
             strcpy(global, "5x3");
-
-
-    
 
             executor(2, transformator(global, 2));
 
@@ -187,6 +193,32 @@ int main(int argc, char *argv[])
 
             executor(3, transformator(coord_final, 3));
 
+            break;
+
+        case 4:
+            
+            printf("Voici l'historique d'utilisation:\n");
+            
+            fichier = fopen("cache/log.txt", "r+");
+
+            compt = 0;
+            
+
+            while(compt == 0)
+            {
+                if(strcmp(chaine_save, chaine_log) == 0)
+                    compt = 1;
+
+                fgets(chaine_log, 50, fichier);
+                printf("%s", chaine_log);
+                strcpy(chaine_save, chaine_log);
+            }
+
+            fgets(chaine_log, 50, fichier);
+            printf("%s\n", chaine_log);
+            
+
+            fclose(fichier);
             break;
 
     }
@@ -219,7 +251,7 @@ void executor(int a, char **global)
     time(&temps);
     instant =* localtime(&temps);
 
-    sprintf(log, "%d/%d %d || %d:%d:%d || {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, global[1]);
+    sprintf(log, "%d/%d %d || %d:%d:%d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, a, global[1]);
 
     printf("je suis log: %s\n", log);
 

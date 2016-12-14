@@ -202,7 +202,7 @@ grid gridGenerator(canevas final){
     ioctl(0, TIOCGWINSZ, &w);
 
     if(w.ws_col < final.colonnes || w.ws_row < final.lignes){
-        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row, final.colonnes, final.lignes);
+        printf("Shell trop petit ! %dx%d %dx%d\n", w.ws_col, w.ws_row, final.colonnes, final.lignes);
         exit(EXIT_FAILURE);
     }
 
