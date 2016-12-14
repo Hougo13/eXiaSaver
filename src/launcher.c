@@ -7,9 +7,6 @@
 #include <stdlib.h>
 
 #include <dirent.h>
-#ifndef WIN32
-
-#endif
 
 #include <time.h>   // pour rand
  
