@@ -38,8 +38,11 @@ void printPlane(int x, int y, direction d){
     pl.data = malloc(sizeof(canevas_pos));
     pl.data[0] = plane;
 
-    canevas img = canevasGenerator(40, 80, pl);
-    printCanevas(img, 0);
+    //canevas img = canevasGenerator(40, 80, pl);
+    canevas img = canevasFullscreenGenerator(pl);
+    grid g =  gridGenerator(img, 0);
+    printGrid(g);
+    //printCanevas(img, 0);
 
     saveCoord(x, y);
 
@@ -61,6 +64,9 @@ void watchPlane(int x, int y, direction d){
             case 's':
                 d = DOWN;
                 break;
+            case 'x':
+                system("clear");
+                exit(EXIT_SUCCESS);
         }
         switch (d){
             case UP:
