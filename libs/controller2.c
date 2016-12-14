@@ -14,6 +14,11 @@ char *imgUrl(char *name) {
         path = "img/Dynamic/";
     }
 
+    char *sleep = getenv("EXIASAVER2_SLEEP");
+    if (sleep == NULL || sleep[0] == '\0') {
+        sleep = "10";
+    }
+
     url = malloc(strlen(path) + strlen(name));
 
     sprintf(url, "%s%s", path, name);
