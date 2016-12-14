@@ -57,21 +57,34 @@ int main(int argc, char *argv[])
     //Pointeur pour se déplacer dans les fichiers
     FILE* fichier = NULL;
 
-    printf("Type:\n");
-    printf("1. Static\n");
-    printf("2. Dynamique\n");
-    printf("3. Intéractif\n");
-    printf("4. Log\n");
-
-
-
-    //On choisit le type de fond ! A passer en aléatoire !
-    scanf("%d",&selec); //rand_a_b(1, 4);
+    selec = rand_a_b(1, 4);
 
     if(argc > 1 )
     {
-        if (strcmp(argv[1], "log") == 0)
-        {selec = 4;}
+        if (strcmp(argv[1], "-l") == 0)
+            selec = 4;
+
+        if (strcmp(argv[1], "-s") == 0)
+            selec = 1;  
+
+        if (strcmp(argv[1], "-d") == 0)
+            selec = 2;  
+
+        if (strcmp(argv[1], "-i") == 0)
+            selec = 3; 
+
+        if (strcmp(argv[1], "--help") == 0)
+        {
+            printf("Commandes disponibles:\n");
+            
+            printf("    -s  Lance le fond d'écran static\n");
+            printf("    -d  Lance le fond d'écran dynamique\n");
+            printf("    -i  Lance le fond d'écran intéractif\n");
+
+            selec = 0;
+        }
+
+
     }   
 
 
