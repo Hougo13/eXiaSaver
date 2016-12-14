@@ -28,6 +28,10 @@ char **transformator (char global[30], int select_transfo);
 
 int main(int argc, char *argv[])
 {
+    char *path = getenv("EXIASAVER_HOME");
+    if(path == NULL || path[0]=='\0'){
+        path = "";
+    }
 
     system("clear");
     system("setterm -cursor off");
@@ -46,7 +50,7 @@ int main(int argc, char *argv[])
 
     char coord_final[30];
 
-    char *path;
+    
 
     char coord_x[30];
     char coord_y[30];
