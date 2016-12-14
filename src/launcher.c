@@ -199,30 +199,7 @@ int main(int argc, char *argv[])
             
             fichier = fopen("cache/log.txt", "r+");
 
-            /*compt = 0;
-            
-
-            for(i=0; compt == 0; i++)
-            {
-
-                printf("comp début: %d\n", strcmp(chaine_save, chaine_log));
-
-                if(strcmp(chaine_save, chaine_log) == 0)
-                    compt = 1;
-
-                fgets(chaine_log, 50, fichier);
-                printf("%s", chaine_log);
-
-                printf("chaine_log: %s", chaine_log);
-                printf("chaine_save: %s\n", chaine_save);
-
-                if(i > 0)
-                {strcpy(chaine_save, chaine_log);}
-
-                printf("comp fin: %d\n\n", strcmp(chaine_save, chaine_log));
-            }*/
-
-
+    
             do{
                 
                 c = fgetc(fichier);
