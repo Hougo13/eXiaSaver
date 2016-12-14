@@ -201,14 +201,16 @@ grid gridGenerator(canevas final, int centered){
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
 
-    if(w.ws_col < final.colonnes || w.ws_row < final.lignes){
-        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row, final.colonnes, final.lignes);
+    if(w.ws_col < final.colonnes*2 || w.ws_row-1 < final.lignes){
+        printf("Shell trop petit ! %dx%d %dx%d", w.ws_col, w.ws_row-1, final.colonnes, final.lignes);
         exit(EXIT_FAILURE);
     }
 
+    //printf("(%d,%d)->%d\n", w.ws_row, (final.lignes - 1),w.ws_row < (final.lignes - 1));
+
     if (centered == 1){
         g.colonnes = w.ws_col;
-        g.lignes = w.ws_row;
+        g.lignes = w.ws_row - 1;
     } else {
         g.colonnes = final.colonnes*2;
         g.lignes = final.lignes;
@@ -222,6 +224,7 @@ grid gridGenerator(canevas final, int centered){
     //On stocke le nombre de ligne et colonne d'une case du canevas
     case_ln = g.lignes/canevas_ln;
     case_cl = g.colonnes/canevas_cl;
+    //printf("(%d,%d)(%d,%d)(%d,%d)(%d,%d)\n", w.ws_row, w.ws_col, final.lignes, final.colonnes, g.lignes, g.colonnes, canevas_ln, canevas_cl);
 
     //Conserve le ratio x/y
     if(case_ln <= case_cl){
@@ -239,6 +242,7 @@ grid gridGenerator(canevas final, int centered){
         margin_ln = 0;
     }
 
+    //printf("(%d,%d)\n", case_ln, case_cl);
     for(int y=0; y < g.lignes; y++){
         g.data[y] = malloc(sizeof(int) * g.colonnes);
         for(int i = 0 ; i < g.colonnes; i++) {
