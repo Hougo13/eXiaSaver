@@ -1,7 +1,3 @@
-//
-// Created by hougo on 13/12/16.
-//
-
 #include "controller3.h"
 #include "../libs/render.c"
 #include <stdlib.h>
@@ -114,10 +110,18 @@ char *getName(direction d){
 void saveCoord(int coordX, int coordY){
 
     FILE* fichier = NULL;
-    
-    fichier = fopen("cache/coord_plane.txt", "r+");
+    char *url;
+
+    char *path = getenv("EXIASAVER_HOME");
+    if (path == NULL || path[0] == '\0') {
+        path = "";
+    }
+
+    url = malloc(strlen(path) + strlen("cache/coord_plane.txt"));
+    sprintf(url, "%scache/coord_plane.txt", path);
+
+    fichier = fopen(url, "r+");
     fprintf(fichier, "%d %d", coordX, coordY);
     fclose(fichier);
-
 
 }

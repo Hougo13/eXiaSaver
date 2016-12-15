@@ -5,215 +5,88 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include <dirent.h>
-
 #include <time.h>   // pour rand
- 
 #include <unistd.h> //execv
-
 #include <string.h>
 
 
-int rand_a_b(int a, int b);
-
-void executor(int, char **global);
-
-int selecteur();
-
-char **transformator (char global[30], int select_transfo);
+int rand_a_b(int a, int b);                  //Return un nbr entre a et b
+void executor(int id, char **argv);          //execute le prgrm
+char **argvGenerator (char *arg, int id);   //genere le argv à passer
+char *getName(void);                        //renvoie un nom d'image
+char *homePath(void);                       //renvoie le repertoire des exec
+char *pbm1Path(void);                       //renvoie le repertoire des images pbm1
+char *cachePath(void);                      //renvoie le repertoire du cache
+char *coordURL(void);                       //renvoie l'url du fichier coord de l'avion
+char *logURL(void);                         //renvoie l'url du fichier log
 
 int main(int argc, char *argv[])
 {
-    char *path = getenv("EXIASAVER_HOME");
-    if(path == NULL || path[0]=='\0'){
-        path = "";
-    }
-
-    system("clear");
-    system("setterm -cursor off");
-
     int selec;
-    int alea;
-    char global[30];
-    int nb_files = 0;
-    int i;
-
-    char* Global;
-
-    char c;
-
-    char **tabXtab;
-
-    char coord_final[30];
-
-    
-
-    char coord_x[30];
-    char coord_y[30];
-
-    int ret_x;
-    int ret_y;
+    char c, coord_final[30], coord_x[30], coord_y[30];
 
     //Pointeur pour se déplacer dans les fichiers
     FILE* fichier = NULL;
 
-    selec = rand_a_b(1, 4);
+    //On clear le shell et on suprime le curseur
+    system("clear");
+    system("setterm -cursor off");
 
+    //on choisi la fonction l'ecran de veille aleatoirement
+    selec = rand_a_b(1, 4);
     if(argc > 1 )
     {
-        if (strcmp(argv[1], "-l") == 0)
+        if (strcmp(argv[1], "-l") == 0 || !strcmp(argv[1], "--log")){
             selec = 4;
-
-        if (strcmp(argv[1], "-s") == 0)
-            selec = 1;  
-
-        if (strcmp(argv[1], "-d") == 0)
-            selec = 2;  
-
-        if (strcmp(argv[1], "-i") == 0)
-            selec = 3; 
-
-        if (strcmp(argv[1], "--help") == 0)
+        } else if (strcmp(argv[1], "-s") == 0 || !strcmp(argv[1], "--static")){
+            selec = 1;
+        }else if (strcmp(argv[1], "-d") == 0 || !strcmp(argv[1], "--dynamic")){
+            selec = 2;
+        }else if (strcmp(argv[1], "-i") == 0 || !strcmp(argv[1], "--interactif")){
+            selec = 3;
+        }else if (strcmp(argv[1], "-h") == 0 || !strcmp(argv[1], "--help"))
         {
             printf("Commandes disponibles:\n");
             
-            printf("    -s  Lance le fond d'écran static\n");
-            printf("    -d  Lance le fond d'écran dynamique\n");
-            printf("    -i  Lance le fond d'écran intéractif\n");
+            printf("    -s   --static       Lance le fond d'écran static\n");
+            printf("    -d   --dynamic      Lance le fond d'écran dynamique\n");
+            printf("    -i   --interactif   Lance le fond d'écran intéractif\n");
+            printf("    -l   --log          Affiche les logs\n");
+            printf("    -h   --help         Affiche les commandes disponibles\n");
 
             selec = 0;
+        }else {
+            printf("Commande non reconnue ajoutez -h\n");
+            exit(EXIT_FAILURE);
         }
-
-
-    }   
-
+    }
 
     switch(selec)
     {
         case 1:
-
-           //Recherche du répertoire /img
-            path = getenv("EXIASAVER1_PBM");
-            if(path == NULL || path[0] == '\0')
-            {
-                path = "img/Static";
-            }
-
-            DIR* rep = NULL;
-            rep = opendir(path);
-
-            if (rep == NULL){ /* Si le dossier n'a pas pu �tre ouvert */
-                perror("");
-                exit(1); }
-
-            struct dirent* fichierLu = NULL;
-
-            //Liste des fichiers dans le répertoire /img + comptage
-            while ((fichierLu = readdir(rep)) != NULL)
-            {
-                printf("Le fichier lu s'appelle %s\n", fichierLu -> d_name);
-                if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
-                    nb_files++;
-                }
-            }
-
-            printf("Il y a %d fichiers\n", nb_files);
-
-            //Allocation dynamique d'un tableau de pointeur de string de la taille du nombre de fichiers
-            tabXtab = malloc(sizeof(char*) * nb_files);
-
-            rewinddir(rep);
-
-            i=0;
-
-            //Remplissage du tableau de string en fonction du nom des fichiers (peuvent prendre les noms '.' et '..' qui seront exclus
-            while ((fichierLu = readdir(rep)) != NULL)
-            {
-                if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
-                    tabXtab[i] = fichierLu->d_name;
-                    i++;
-                }
-            }
-
-            //Affichage des noms à partir du tabeau de pointeurs de string
-            for(i=0; i < nb_files; i++)
-            {
-                printf("Le nom du fichier %d est: %s\n", i, tabXtab[i]);
-            }
-
-
-            //Génération d'un nombre aléatoire
-            alea = rand_a_b(1, nb_files+1);
-            printf("alea= %d\n", alea);
-
-
-            //Choix de l'image en fonction du nombre généré
-            switch(alea)
-            {
-                case 1:
-                    strcpy(global, "img_1.pbm");
-                    break;
-                case 2:
-                    strcpy(global, "img_2.pbm");
-                    break;
-                case 3:
-                    strcpy(global, "img_3.pbm");
-                    break;
-                case 4:
-                    strcpy(global, "img_4.pbm");
-                    break;
-                case 5:
-                    strcpy(global, "img_5.pbm");
-                    break;
-                case 6:
-                    strcpy(global, "img_6.pbm");
-                    break;
-                default:
-                    break;
-            }
-
-            printf("je suis l'ancien global: %s\n", global);
-            
-            executor(1, transformator(global, 1));
-
+            executor(selec, argvGenerator(getName(), selec));
             break;
-
-            
-            
-        
 
         case 2:
-
-            strcpy(global, "5x3");
-
-            executor(2, transformator(global, 2));
-
+            executor(selec, argvGenerator("5x3", selec));
             break;
-
         case 3:
-
             //Ouverture du fichier qui contient les coordonnées de base de l'avion et lecture de celles-ci
-            fichier = fopen("cache/coord_plane.txt", "r+");
+            fichier = fopen(coordURL(), "r+");
             fscanf(fichier, "%s %s", &coord_x, &coord_y);
             fclose(fichier);
 
-            printf("coord_x: %s\n", coord_x);
-            printf("coord_y: %s\n", coord_y);
-
             sprintf(coord_final, "%sx%s", coord_x, coord_y);
 
-            executor(3, transformator(coord_final, 3));
-
+            executor(selec, argvGenerator(coord_final, selec));
             break;
-
         case 4:
-            
             printf("Voici l'historique d'utilisation:\n\n");
             
-            fichier = fopen("cache/log.txt", "r+");
+            fichier = fopen(logURL(), "r+");
 
-    
+            //On parcourt le fichier log pour l'afficher
             do{
                 
                 c = fgetc(fichier);
@@ -227,11 +100,6 @@ int main(int argc, char *argv[])
             break;
 
     }
-
-
-    
-
-
     return 0;
 }
 
@@ -244,11 +112,9 @@ int rand_a_b(int a, int b)
 }
 
 
-void executor(int a, char **global)
+void executor(int id, char **argv)
 {
-    
-    char log[100];
-
+    char log[100], *url;
 
     time_t temps;
     struct tm instant;
@@ -256,32 +122,34 @@ void executor(int a, char **global)
     time(&temps);
     instant =* localtime(&temps);
 
-    sprintf(log, "%d/%d %d || %.2d:%.2d:%.2d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, a, global[1]);
+    sprintf(log, "%d/%d %d || %.2d:%.2d:%.2d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, id, argv[1]);
 
-    printf("je suis log: %s\n", log);
+    url = malloc(strlen(cachePath())+7);
+    sprintf(url, "%slog.txt", cachePath());
 
     FILE* fichier = NULL;
-    fichier = fopen("cache/log.txt", "r+");
+    fichier = fopen(url, "r+");
+    printf("%s", url);
+
     while(fgetc(fichier) != EOF);
+
     fprintf(fichier, "%s\n",log);
+
     fclose(fichier);
 
+    //On se postionne dans le repertoire des fichiers exec
+    chdir(homePath());
 
-
-    
-    switch(a)
+    switch(id)
     {
-        
         case 1:
-            execv("./eXiaSaver1", global);
+            execv(argv[0], argv);
             break;
         case 2:
-            execv("./eXiaSaver2", NULL);
+            execv(argv[0], NULL);
             break;
-        case 3:            
-            printf("je suis global: %s\n", global[1]);
-
-            execv("./eXiaSaver3", global); 
+        case 3:
+            execv(argv[0], argv);
             break;
     }
 
@@ -290,36 +158,115 @@ void executor(int a, char **global)
 
 }
 
- char **transformator (char global[30], int select_transfo)
+ char **argvGenerator (char *arg, int id)
  {
-    
-    int i;
-    int taille;
-    char **global_transf;
+    char **argv;
 
-    global_transf = malloc(sizeof(char*) * 2);
+    argv = malloc(sizeof(char*) * 2);
+    argv[0] = malloc(strlen(homePath())+12);
 
+    sprintf(argv[0], "./eXiaSaver%d", id);
 
-    
-    switch(select_transfo)
-    {
-        case 1:
-            global_transf[0] = "./eXiaSaver1";
-            break;
-        case 2:
-            global_transf[0] = "./eXiaSaver2";
-            break;
-        case 3:
-            global_transf[0] = "./eXiaSaver3";
-            
-            break;
-    }   
-    
-    global_transf[1] = global;
+    argv[1] = arg;
 
-    return global_transf;
+    printf("%s %s\n", argv[0], argv[1]);
+
+    return argv;
 
  }
 
+char *getName(void){
+    char **tabXtab, *path;
+    int nb_files = 0, i = 0, alea;
 
+    //Recherche du répertoire /img
+    path = pbm1Path();
 
+    DIR* rep = NULL;
+    rep = opendir(path);
+
+    if (rep == NULL) // Si le dossier n'a pas pu �tre ouvert
+        exit(EXIT_FAILURE);
+
+    struct dirent* fichierLu = NULL;
+
+    //Liste des fichiers dans le répertoire /img + comptage
+    while ((fichierLu = readdir(rep)) != NULL)
+    {
+        //printf("Le fichier lu s'appelle %s\n", fichierLu -> d_name);
+        if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
+            nb_files++;
+        }
+    }
+
+    //printf("Il y a %d fichiers\n", nb_files);
+
+    //Allocation dynamique d'un tableau de pointeur de string de la taille du nombre de fichiers
+    tabXtab = malloc(sizeof(char*) * nb_files);
+
+    rewinddir(rep);
+
+    //Remplissage du tableau de string en fonction du nom des fichiers (peuvent prendre les noms '.' et '..' qui seront exclus
+    while ((fichierLu = readdir(rep)) != NULL)
+    {
+        if(strcmp(fichierLu->d_name, ".") &&  strcmp(fichierLu->d_name, "..")) {
+            tabXtab[i] = fichierLu->d_name;
+            i++;
+        }
+    }
+
+    /*//Affichage des noms à partir du tabeau de pointeurs de string
+    for(i=0; i < nb_files; i++)
+    {
+        printf("Le nom du fichier %d est: %s\n", i, tabXtab[i]);
+    }*/
+
+    //Génération d'un nombre aléatoire
+    alea = rand_a_b(0, nb_files);
+
+    return tabXtab[alea];
+}
+
+char *homePath(void){
+    char *path;
+    path = getenv("EXIASAVER_HOME");
+    if(path == NULL || path[0] == '\0')
+    {
+        path = "";
+    }
+    return path;
+}
+
+char *pbm1Path(void){
+    char *path;
+    path = getenv("EXIASAVER1_PBM");
+    if(path == NULL || path[0] == '\0')
+    {
+        path = "img/Static/";
+    }
+    return path;
+}
+
+char *cachePath(void){
+    char *path;
+    path = malloc(strlen(homePath())+6);
+    sprintf(path, "%scache/", homePath());
+
+    return path;
+}
+
+char *logURL(void){
+    char *path;
+    path = malloc(strlen(cachePath())+7);
+    sprintf(path, "%slog.txt", cachePath());
+
+    return path;
+}
+
+char *coordURL(void){
+    char *path;
+    path = malloc(strlen(cachePath())+15);
+    sprintf(path, "%scoord_plane.txt", cachePath());
+
+    return path;
+}

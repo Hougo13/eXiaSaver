@@ -1,7 +1,3 @@
-//
-// Created by hougo on 08/12/16.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,9 +6,16 @@
 void main(int argc, char *argv[])
 {
     char **urls;
-    int auto_refresh = 5;
+    int auto_refresh;
     int sec = 0;
     char text[64];
+
+    char *sl = getenv("EXIASAVER2_SLEEP");
+    if(sl == NULL || sl[0]=='\0'){
+        auto_refresh = 5;
+    } else{
+        auto_refresh = atoi(sl);
+    }
 
     strcpy(text, "Cet écran sera actualisé dans quelques secondes");
     urls = getURLs(getTime());
