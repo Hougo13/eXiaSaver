@@ -38,27 +38,40 @@ void printPlane(int x, int y, direction d){
     pl.data = malloc(sizeof(canevas_pos));
     pl.data[0] = plane;
 
-    canevas img = canevasGenerator(40, 80, pl);
-    printCanevas(img, 0);
+    //canevas img = canevasGenerator(40, 80, pl);
+    canevas img = canevasFullscreenGenerator(pl);
+    grid g =  gridGenerator(img, 0);
+    printGrid(g);
+    //printCanevas(img, 0);
+
+    saveCoord(x, y);
 
 }
 
 void watchPlane(int x, int y, direction d){
     char c;
+    char lastC = 'd';
     do{
         switch (c){
             case 'z':
                 d = UP;
+                lastC = c;
                 break;
             case 'q':
                 d = LEFT;
+                lastC = c;
                 break;
             case 'd':
                 d = RIGHT;
+                lastC = c;
                 break;
             case 's':
                 d = DOWN;
+                lastC = c;
                 break;
+            case 'x':
+                system("clear");
+                exit(EXIT_SUCCESS);
         }
         switch (d){
             case UP:
@@ -75,6 +88,7 @@ void watchPlane(int x, int y, direction d){
                 break;
         }
         printPlane(x, y, d);
+        printf("X: %d Y: %d | (%c)?", x, y, lastC);
     }while (c = getchar());
 }
 
@@ -95,4 +109,15 @@ char *getName(direction d){
             break;
     }
     return name;
+}
+
+void saveCoord(int coordX, int coordY){
+
+    FILE* fichier = NULL;
+    
+    fichier = fopen("cache/coord_plane.txt", "r+");
+    fprintf(fichier, "%d %d", coordX, coordY);
+    fclose(fichier);
+
+
 }

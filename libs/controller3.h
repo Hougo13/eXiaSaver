@@ -11,5 +11,6 @@ char *imgUrl(char *name);
 void printPlane(int x, int y, direction d);
 void watchPlane(int x, int y, direction d);
 char *getName(direction d);
+void saveCoord(int coordX, int coordY);
 
 #endif //EXIASAVER_CONTROLLER3_H

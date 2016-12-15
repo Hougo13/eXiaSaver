@@ -14,6 +14,11 @@ char *imgUrl(char *name) {
         path = "img/Dynamic/";
     }
 
+    char *sleep = getenv("EXIASAVER2_SLEEP");
+    if (sleep == NULL || sleep[0] == '\0') {
+        sleep = "10";
+    }
+
     url = malloc(strlen(path) + strlen(name));
 
     sprintf(url, "%s%s", path, name);
@@ -21,8 +26,10 @@ char *imgUrl(char *name) {
     return url;
 }
 
-void getTime(char h[8]){
+char *getTime(void){
 
+    char *h;
+    h = malloc(sizeof(char)*32);
     time_t secondes;
     struct tm instant;
 
@@ -30,6 +37,8 @@ void getTime(char h[8]){
     instant =* localtime(&secondes);
 
     sprintf(h, "%.2d:%.2d:%.2d", instant.tm_hour, instant.tm_min, instant.tm_sec);
+
+    return h;
 }
 
 char **getURLs(char h[8]){
@@ -105,4 +114,15 @@ void printTime(char **urls){
 
     canevas t = canevasGenerator(5,27, array);
     printCanevas(t, 0);
+}
+
+void printText(char *string){
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+
+    int margin = (w.ws_col-strlen(string))/2;
+    for (int i = 0; i < margin; ++i) {
+        printf("%c", ' ');
+    }
+    printf("%s", string);
 }

@@ -33,12 +33,13 @@
     canevas extractFile(char *name);
 
     canevas readFile(char *name);
-    void streamFile(char *name, int descriptor[2]);
-    canevas readStream(int descriptor[2]);
+    void streamFile(char *name, int *descriptor);
+    canevas readStream(int *descriptor);
 
-    grid gridGenerator(canevas final);
+    grid gridGenerator(canevas final, int centered);
     void printGrid(grid g);
 
+    canevas canevasFullscreenGenerator(canevas_pos_list array);
     canevas canevasGenerator(int height, int width, canevas_pos_list array);
     canevas mergeCanevas(canevas img, canevas_pos element);
     int printCanevas(canevas img, int auto_refresh);

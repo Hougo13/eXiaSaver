@@ -7,16 +7,15 @@
 #include <stdlib.h>
 
 #include <dirent.h>
-#ifndef WIN32
-
-#endif
 
 #include <time.h>   // pour rand
  
 #include <unistd.h> //execv
 
+#include <string.h>
 
-int rand_a_b(int, int);
+
+int rand_a_b(int a, int b);
 
 void executor(int, char **global);
 
@@ -26,6 +25,10 @@ char **transformator (char global[30], int select_transfo);
 
 int main(int argc, char *argv[])
 {
+    char *path = getenv("EXIASAVER_HOME");
+    if(path == NULL || path[0]=='\0'){
+        path = "";
+    }
 
     system("clear");
     system("setterm -cursor off");
@@ -38,12 +41,13 @@ int main(int argc, char *argv[])
 
     char* Global;
 
-    
+    char c;
 
     char **tabXtab;
 
+    char coord_final[30];
 
-    char *path;
+    
 
     char coord_x[30];
     char coord_y[30];
@@ -54,16 +58,35 @@ int main(int argc, char *argv[])
     //Pointeur pour se déplacer dans les fichiers
     FILE* fichier = NULL;
 
+    selec = rand_a_b(1, 4);
 
-    printf("Type:\n");
-    printf("1. Static\n");
-    printf("2. Dynamique\n");
-    printf("3. Intéractif\n");
+    if(argc > 1 )
+    {
+        if (strcmp(argv[1], "-l") == 0)
+            selec = 4;
+
+        if (strcmp(argv[1], "-s") == 0)
+            selec = 1;  
+
+        if (strcmp(argv[1], "-d") == 0)
+            selec = 2;  
+
+        if (strcmp(argv[1], "-i") == 0)
+            selec = 3; 
+
+        if (strcmp(argv[1], "--help") == 0)
+        {
+            printf("Commandes disponibles:\n");
+            
+            printf("    -s  Lance le fond d'écran static\n");
+            printf("    -d  Lance le fond d'écran dynamique\n");
+            printf("    -i  Lance le fond d'écran intéractif\n");
+
+            selec = 0;
+        }
 
 
-    //On choisit le type de fond ! A passer en aléatoire !
-    scanf("%d",&selec); //rand_a_b(1, 4);
-
+    }   
 
 
     switch(selec)
@@ -151,9 +174,6 @@ int main(int argc, char *argv[])
             }
 
             printf("je suis l'ancien global: %s\n", global);
-
-            
-
             
             executor(1, transformator(global, 1));
 
@@ -166,9 +186,6 @@ int main(int argc, char *argv[])
         case 2:
 
             strcpy(global, "5x3");
-
-
-    
 
             executor(2, transformator(global, 2));
 
@@ -184,10 +201,29 @@ int main(int argc, char *argv[])
             printf("coord_x: %s\n", coord_x);
             printf("coord_y: %s\n", coord_y);
 
-            sprintf(global, "%sx%s", coord_x, coord_y);
+            sprintf(coord_final, "%sx%s", coord_x, coord_y);
 
-            executor(3, transformator(global, 3));
+            executor(3, transformator(coord_final, 3));
 
+            break;
+
+        case 4:
+            
+            printf("Voici l'historique d'utilisation:\n\n");
+            
+            fichier = fopen("cache/log.txt", "r+");
+
+    
+            do{
+                
+                c = fgetc(fichier);
+                if (c != EOF)
+                    printf("%c", c);
+            }while (c != EOF);
+            
+            printf("\n");
+
+            fclose(fichier);
             break;
 
     }
@@ -220,7 +256,7 @@ void executor(int a, char **global)
     time(&temps);
     instant =* localtime(&temps);
 
-    sprintf(log, "%d/%d %d || %d:%d:%d || {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, global[1]);
+    sprintf(log, "%d/%d %d || %.2d:%.2d:%.2d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, a, global[1]);
 
     printf("je suis log: %s\n", log);
 
@@ -237,9 +273,6 @@ void executor(int a, char **global)
     {
         
         case 1:
-            
-            printf("je suis global: %s\n", global[1]);
-
             execv("./eXiaSaver1", global);
             break;
         case 2:
@@ -248,7 +281,7 @@ void executor(int a, char **global)
         case 3:            
             printf("je suis global: %s\n", global[1]);
 
-            execv("./eXiaSaver3", NULL); 
+            execv("./eXiaSaver3", global); 
             break;
     }
 
@@ -278,6 +311,7 @@ void executor(int a, char **global)
             break;
         case 3:
             global_transf[0] = "./eXiaSaver3";
+            
             break;
     }   
     
