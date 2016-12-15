@@ -256,7 +256,7 @@ void executor(int a, char **global)
     time(&temps);
     instant =* localtime(&temps);
 
-    sprintf(log, "%d/%d %d || %d:%d:%d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, a, global[1]);
+    sprintf(log, "%d/%d %d || %.2d:%.2d:%.2d || Type: %d {%s}", instant.tm_mday, instant.tm_mon, instant.tm_year + 1900, instant.tm_hour, instant.tm_min, instant.tm_sec, a, global[1]);
 
     printf("je suis log: %s\n", log);
 
